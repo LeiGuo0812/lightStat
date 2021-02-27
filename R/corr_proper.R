@@ -8,10 +8,10 @@
 #' \item\code{r:} the symmetric matrix of correlations
 #' \item\code{p:} two tailed probability of t for each correlation
 #' \item\code{n:} the number of sample used in this pair of correlation
-#' \item\code{method:} the correlation method used in this pair of correlation analysis
+#' \item\code{method:} the correlation method used in this pair of correlation analysis. If both variables are ordinal, kendall correlation analysis will be used. If both variables are numeric and meet normality, pearson correlation analysis will be used. If either of the two variables doesn't meet normality, spearman correlation analysis will be used. If one variable is ordinal and the other is numerical ,spearman correlation analysis will be used. If either variable is factor, NA will be returned to all results.
 #' \item\code{t:} value of t-test for each correlation
 #' \item\code{se:} standard error of the correlation
-#' \item\code{cor_long:} the long format of correlation analysis results}
+#' \item\code{cor_long:} the long format of correlation analysis results, NA results will not be shown}
 #' @export
 #'
 #' @examples
@@ -26,8 +26,6 @@
 corr_proper <- function(data, columns = 1:length(data), p.adjust = NULL){
   #Sub set data
   data_test <- data[columns]
-  #Normality test
-  normal <- lapply(data_test, shapiro.test)
   #Prepare result container
   table <- data.frame(row.names = colnames(data_test))
   results <- list(r = table,
@@ -40,23 +38,65 @@ corr_proper <- function(data, columns = 1:length(data), p.adjust = NULL){
   #Loop for paire-wise variable
   for (i in 1:length(data_test)) {
     for (j in 1:length(data_test)) {
-      # If either variable does not meet normality
-      if (normal[[i]]$p.value < 0.05 | normal[[j]]$p.value < 0.05 ) {
-        #Corr test with spearman correlation
-        cor <- psych::corr.test(data_test[i], data_test[j], method = 'spearman')
+      if(is.character(data_test[i] %>% dplyr::pull()) |
+         is.character(data_test[j] %>% dplyr::pull())){
+        cor <- list(r = NA,
+                    p = NA,
+                    n = NA,
+                    t = NA,
+                    se = NA)
+        results$method[i,colnames(data_test)[j]] <- NA
+      } else if (is.ordered(data_test[i] %>% dplyr::pull()) &
+          is.ordered(data_test[j] %>% dplyr::pull())) {
+        cor <- psych::corr.test(as.numeric(data_test[i] %>% pull()),
+                                as.numeric(data_test[j] %>% pull()),
+                                method = 'kendall')
+        #Record test method
+        results$method[i,colnames(data_test)[j]] <- 'kendall'
+      }
+      else if(
+        (is.ordered(data_test[i] %>% dplyr::pull()) &
+              !is.factor(data_test[j] %>% dplyr::pull())) |
+        (!is.factor(data_test[i] %>% dplyr::pull()) &
+              is.ordered(data_test[j] %>% dplyr::pull()))){
+        cor <- psych::corr.test(as.numeric(data_test[i] %>% pull()),
+                                as.numeric(data_test[j] %>% pull()),
+                                method = 'spearman')
         #Record test method
         results$method[i,colnames(data_test)[j]] <- 'spearman'
-      } else {
-        #If both variables meet nomorlity, use pearson correlation
-        cor <- psych::corr.test(data_test[i],data_test[j])
-        results$method[i,colnames(data_test)[j]] <- 'pearson'
+      } else if (is.factor(data_test[i] %>% dplyr::pull()) |
+                 is.factor(data_test[j] %>% dplyr::pull())) {
+        cor <- list(r = NA,
+                    p = NA,
+                    n = NA,
+                    t = NA,
+                    se = NA)
+        results$method[i,colnames(data_test)[j]] <- NA
       }
+      else {
+        #Normality test
+        normal <- lapply(c(data_test[i],data_test[j]), shapiro.test)
+      # If either variable does not meet normality
+        if (normal[[1]]$p.value < 0.05 | normal[[2]]$p.value < 0.05 ) {
+          #Corr test with spearman correlation
+          cor <- psych::corr.test(as.numeric(data_test[i] %>% pull()),
+                                  as.numeric(data_test[j] %>% pull()),
+                                  method = 'spearman')
+          #Record test method
+          results$method[i,colnames(data_test)[j]] <- 'spearman'
+        } else {
+          #If both variables meet nomorlity, use pearson correlation
+          cor <- psych::corr.test(as.numeric(data_test[i] %>% pull()),
+                                  as.numeric(data_test[j] %>% pull()))
+          results$method[i,colnames(data_test)[j]] <- 'pearson'
+        }
+        }
       #Record results
-      results$r[i,colnames(data_test)[j]] <- cor$r[1,1]
-      results$p[i,colnames(data_test)[j]] <- cor$p[1,1]
+      results$r[i,colnames(data_test)[j]] <- cor$r
+      results$p[i,colnames(data_test)[j]] <- cor$p
       results$n[i,colnames(data_test)[j]] <- cor$n
-      results$t[i,colnames(data_test)[j]] <- cor$t[1,1]
-      results$se[i,colnames(data_test)[j]] <- cor$se[1,1]
+      results$t[i,colnames(data_test)[j]] <- cor$t
+      results$se[i,colnames(data_test)[j]] <- cor$se
     }
   }
   #Combine results into long format
@@ -73,6 +113,7 @@ corr_proper <- function(data, columns = 1:length(data), p.adjust = NULL){
   results[['cor_long']] <- suppressMessages(cor_long(results$r,'r') %>%
     dplyr::filter(var1 != var2) %>%
     dplyr::filter(!duplicated(r)) %>%
+    dplyr::filter(!is.na(r)) %>%
     dplyr::left_join(cor_long(results$p,'p')) %>%
     dplyr::left_join(cor_long(results$n,'n')) %>%
     dplyr::left_join(cor_long(results$method,'method')) %>%

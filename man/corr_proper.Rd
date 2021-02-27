@@ -18,10 +18,10 @@ a list. contains the matrix and long form result of correlation matrix:\itemize{
 \item\code{r:} the symmetric matrix of correlations
 \item\code{p:} two tailed probability of t for each correlation
 \item\code{n:} the number of sample used in this pair of correlation
-\item\code{method:} the correlation method used in this pair of correlation analysis
+\item\code{method:} the correlation method used in this pair of correlation analysis. If both variables are ordinal, kendall correlation analysis will be used. If both variables are numeric and meet normality, pearson correlation analysis will be used. If either of the two variables doesn't meet normality, spearman correlation analysis will be used. If one variable is ordinal and the other is numerical ,spearman correlation analysis will be used. If either variable is factor, NA will be returned to all results.
 \item\code{t:} value of t-test for each correlation
 \item\code{se:} standard error of the correlation
-\item\code{cor_long:} the long format of correlation analysis results}
+\item\code{cor_long:} the long format of correlation analysis results, NA results will not be shown}
 }
 \description{
 chooses proper correlation method (pearson or spearman) based on normality of the tested variables.
