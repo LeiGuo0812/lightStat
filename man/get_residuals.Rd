@@ -17,7 +17,7 @@ get_residuals(data, cov, addmean = TRUE)
 a data frame with same dimension with data, containing the residuals of the original columns
 }
 \description{
-get_residuals
+get residuals of columns in data regressed cov with \code{\link[stats]{lm}}
 }
 \examples{
 data("mtcars")

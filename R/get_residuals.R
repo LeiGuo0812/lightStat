@@ -1,5 +1,5 @@
 #' get_residuals
-#'
+#' @description get residuals of columns in data regressed cov with \code{\link[stats]{lm}}
 #' @param data a data frame or tibble, contains the columns to calculate residuals
 #' @param cov a data frame or tibble, contains the columns as covariate. The length of row should be the same as data
 #' @param addmean logical, should the mean of original data should be added back to the residual, default is true
