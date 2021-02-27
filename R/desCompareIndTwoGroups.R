@@ -1,4 +1,4 @@
-#' corr_proper
+#' desCompareIndTwoGroups
 #' @description gives a easy-to-read result of two independent group description and comparison analysis.
 #'
 #' @param data a data.frame or tibble

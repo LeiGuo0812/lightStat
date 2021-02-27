@@ -7,9 +7,9 @@ Authors@R:
            family = "Guo",
            role = c("aut", "cre"),
            email = "guolei0812@yeah.net")
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Maintainer: The package maintainer <guolei0812@yeah.net>
+Description: provide convinient functions to facilitate statistical analysis
+    Personal use
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

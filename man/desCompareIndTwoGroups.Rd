@@ -2,7 +2,7 @@
 % Please edit documentation in R/desCompareIndTwoGroups.R
 \name{desCompareIndTwoGroups}
 \alias{desCompareIndTwoGroups}
-\title{corr_proper}
+\title{desCompareIndTwoGroups}
 \usage{
 desCompareIndTwoGroups(data, columns, group, ci = FALSE)
 }
