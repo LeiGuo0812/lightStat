@@ -14,7 +14,14 @@ corr_proper(data, columns = 1:length(data), p.adjust = NULL)
 \item{p.adjust}{p.adjust receive a string of holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none", which would conduct p value adjust.}
 }
 \value{
-a list. contains the matrix and long form result of correlation matrix
+a list. contains the matrix and long form result of correlation matrix:\itemize{
+\item\code{r:} the symmetric matrix of correlations
+\item\code{p:} two tailed probability of t for each correlation
+\item\code{n:} the number of sample used in this pair of correlation
+\item\code{method:} the correlation method used in this pair of correlation analysis
+\item\code{t:} value of t-test for each correlation
+\item\code{se:} standard error of the correlation
+\item\code{cor_long:} the long format of correlation analysis results}
 }
 \description{
 chooses proper correlation method (pearson or spearman) based on normality of the tested variables.

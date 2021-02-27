@@ -5,10 +5,23 @@
 #' @param columns dependent variables needed to be test, could be either string or column index
 #' @param group the grouping variable, could be either string or column index
 #' @param ci  a logical. Determine whether the ci of effect size should be calculated. Default is False
+#' @param n The number of replications to use for bootstrap to Calculate ci of effect size, default is 1000 (larger number will be very time-consuming).
 #'
-#' @details The comparison is based on the normality and variance quality. If the data don't meet normality, Mann-Whitney test will be conducted. Ohterwise the student t-test would be conducted.
+#' @details The comparison is based on the normality and variance quality. If the data don't meet normality, Mann-Whitney test will be conducted. Otherwise the student t-test would be conducted.
 #'
-#' @return a data frame that contains description and comparison results.
+#' @return a data frame that contains description and comparison results.\itemize{
+#'  \item\code{y:} The dependent variable
+#'  \item\code{group:} The name of group
+#'  \item\code{n:} The number of sample in group used in the test
+#'  \item\code{mean:} mean of tested dependent variable
+#'  \item\code{sd:} standard deviation of tested dependent variable
+#'  \item\code{median:} median of tested dependent variable
+#'  \item\code{groupx_q1:} first quantile of tested dependent variable
+#'  \item\code{groupx_q3:} third quantile of tested dependent variable
+#'  \item\code{mad:} median absolute deviation (see ?MAD)
+#'  \item\code{effect.size:} if method is t-test, calculate cohen's d effect size.If the t-test did not make a homogeneity of variance assumption, (the Welch test), the variance term will mirror the Welch test, otherwise a pooled estimate is used. Interpretation: 0.2 (small effect), 0.5 (moderate effect) and 0.8 (large effect). If method is Mann-Whitney,Wilcoxon effect size (r) will be calculated. Interpretation: 0.10 - < 0.3 (small effect), 0.30 - < 0.5 (moderate effect) and >= 0.5 (large effect).
+#'  \item\code{effect.conf.low,effect.conf.high:} lower and upper bound of the effect size confidence interval.}
+#'
 #' @export
 #'
 #' @examples
@@ -16,7 +29,7 @@
 #' desCompareIndTwoGroups(data = mtcars, columns = -8, group = 8)
 #'
 #'
-desCompareIndTwoGroups  <- function(data, columns, group, ci = FALSE){
+desCompareIndTwoGroups  <- function(data, columns, group, ci = FALSE, n = 1000){
   #Turn numerical group into character
   if (is.numeric(group)) {
     group = colnames(data)[group]
@@ -101,7 +114,7 @@ desCompareIndTwoGroups  <- function(data, columns, group, ci = FALSE){
         #Mann-Whitney test
         model <- rstatix::wilcox_test(data = data_test, formula)
         #Calculate the effect size
-        effect_size <- rstatix::wilcox_effsize(data = data_test, formula = formula, ci = ci)
+        effect_size <- rstatix::wilcox_effsize(data = data_test, formula = formula, ci = ci, nboot = n)
 
         #Record the test Results
         results[i,'statistic'] <- model$statistic
@@ -123,7 +136,7 @@ desCompareIndTwoGroups  <- function(data, columns, group, ci = FALSE){
           results[i,'varequ'] <- 'False'
           #Let var.equal as F
           model <- rstatix::t_test(data = data_test, formula, var.equal = F)
-          effect_size <- rstatix::cohens_d(data = data_test, formula = formula, var.equal = F, ci = T)
+          effect_size <- rstatix::cohens_d(data = data_test, formula = formula, var.equal = F, ci = T, nboot = n)
 
           results[i,'statistic'] <- model$statistic
           results[i,'p'] <- model$p
@@ -136,7 +149,7 @@ desCompareIndTwoGroups  <- function(data, columns, group, ci = FALSE){
           #Else means the variances are equal
           results[i,'varequ'] <- 'True'
           model <- rstatix::t_test(data = data_test, formula, var.equal = T)
-          effect_size <- rstatix::cohens_d(data = data_test, formula = formula, var.equal = T, ci = T)
+          effect_size <- rstatix::cohens_d(data = data_test, formula = formula, var.equal = T, ci = T, nboot = n)
           results[i,'statistic'] <- model$statistic
           results[i,'p'] <- model$p
           results[i,'effect.size'] <- effect_size$effsize

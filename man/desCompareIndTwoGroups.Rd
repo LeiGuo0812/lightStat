@@ -4,7 +4,7 @@
 \alias{desCompareIndTwoGroups}
 \title{desCompareIndTwoGroups}
 \usage{
-desCompareIndTwoGroups(data, columns, group, ci = FALSE)
+desCompareIndTwoGroups(data, columns, group, ci = FALSE, n = 1000)
 }
 \arguments{
 \item{data}{a data.frame or tibble}
@@ -14,15 +14,28 @@ desCompareIndTwoGroups(data, columns, group, ci = FALSE)
 \item{group}{the grouping variable, could be either string or column index}
 
 \item{ci}{a logical. Determine whether the ci of effect size should be calculated. Default is False}
+
+\item{n}{The number of replications to use for bootstrap to Calculate ci of effect size, default is 1000 (larger number will be very time-consuming).}
 }
 \value{
-a data frame that contains description and comparison results.
+a data frame that contains description and comparison results.\itemize{
+ \item\code{y:} The dependent variable
+ \item\code{group:} The name of group
+ \item\code{n:} The number of sample in group used in the test
+ \item\code{mean:} mean of tested dependent variable
+ \item\code{sd:} standard deviation of tested dependent variable
+ \item\code{median:} median of tested dependent variable
+ \item\code{groupx_q1:} first quantile of tested dependent variable
+ \item\code{groupx_q3:} third quantile of tested dependent variable
+ \item\code{mad:} median absolute deviation (see ?MAD)
+ \item\code{effect.size:} if method is t-test, calculate cohen's d effect size.If the t-test did not make a homogeneity of variance assumption, (the Welch test), the variance term will mirror the Welch test, otherwise a pooled estimate is used. Interpretation: 0.2 (small effect), 0.5 (moderate effect) and 0.8 (large effect). If method is Mann-Whitney,Wilcoxon effect size (r) will be calculated. Interpretation: 0.10 - < 0.3 (small effect), 0.30 - < 0.5 (moderate effect) and >= 0.5 (large effect).
+ \item\code{effect.conf.low,effect.conf.high:} lower and upper bound of the effect size confidence interval.}
 }
 \description{
 gives a easy-to-read result of two independent group description and comparison analysis.
 }
 \details{
-The comparison is based on the normality and variance quality. If the data don't meet normality, Mann-Whitney test will be conducted. Ohterwise the student t-test would be conducted.
+The comparison is based on the normality and variance quality. If the data don't meet normality, Mann-Whitney test will be conducted. Otherwise the student t-test would be conducted.
 }
 \examples{
 data("mtcars")
