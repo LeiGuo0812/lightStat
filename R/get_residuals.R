@@ -27,7 +27,7 @@ get_residuals <- function(data,cov,addmean = TRUE){
       return(model$residuals)
     }
   })
-  names(results) <- paste0(var,'_residual')
+  names(results) <- paste0(var,'.residual')
   results %>% as.data.frame() -> results
   return(results)
 }
