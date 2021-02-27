@@ -26,8 +26,6 @@
 corr_proper <- function(data, columns = 1:length(data), p.adjust = NULL){
   #Sub set data
   data_test <- data[columns]
-  #Normality test
-  normal <- lapply(data_test, shapiro.test)
   #Prepare result container
   table <- data.frame(row.names = colnames(data_test))
   results <- list(r = table,
@@ -40,17 +38,39 @@ corr_proper <- function(data, columns = 1:length(data), p.adjust = NULL){
   #Loop for paire-wise variable
   for (i in 1:length(data_test)) {
     for (j in 1:length(data_test)) {
-      # If either variable does not meet normality
-      if (normal[[i]]$p.value < 0.05 | normal[[j]]$p.value < 0.05 ) {
-        #Corr test with spearman correlation
-        cor <- psych::corr.test(data_test[i], data_test[j], method = 'spearman')
+      if (is.ordered(data_test[i] %>% dplyr::pull()) &
+          is.ordered(data_test[j] %>% dplyr::pull())) {
+        cor <- psych::corr.test(as.numeric(data_test[i] %>% pull()),
+                                as.numeric(data_test[j] %>% pull()),
+                                method = 'kendall')
+        #Record test method
+        results$method[i,colnames(data_test)[j]] <- 'kendall'
+      }
+      else if(is.ordered(data_test[i] %>% dplyr::pull()) |
+              is.ordered(data_test[j] %>% dplyr::pull())){
+        cor <- psych::corr.test(as.numeric(data_test[i] %>% pull()),
+                                as.numeric(data_test[j] %>% pull()),
+                                method = 'spearman')
         #Record test method
         results$method[i,colnames(data_test)[j]] <- 'spearman'
       } else {
-        #If both variables meet nomorlity, use pearson correlation
-        cor <- psych::corr.test(data_test[i],data_test[j])
-        results$method[i,colnames(data_test)[j]] <- 'pearson'
-      }
+        #Normality test
+        normal <- lapply(c(data_test[i],data_test[j]), shapiro.test)
+      # If either variable does not meet normality
+        if (normal[[1]]$p.value < 0.05 | normal[[1]]$p.value < 0.05 ) {
+          #Corr test with spearman correlation
+          cor <- psych::corr.test(as.numeric(data_test[i] %>% pull()),
+                                  as.numeric(data_test[j] %>% pull()),
+                                  method = 'spearman')
+          #Record test method
+          results$method[i,colnames(data_test)[j]] <- 'spearman'
+        } else {
+          #If both variables meet nomorlity, use pearson correlation
+          cor <- psych::corr.test(as.numeric(data_test[i] %>% pull()),
+                                  as.numeric(data_test[j] %>% pull()))
+          results$method[i,colnames(data_test)[j]] <- 'pearson'
+        }
+        }
       #Record results
       results$r[i,colnames(data_test)[j]] <- cor$r[1,1]
       results$p[i,colnames(data_test)[j]] <- cor$p[1,1]
