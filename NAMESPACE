@@ -2,3 +2,4 @@
 
 export(corr_proper)
 export(desCompareIndTwoGroups)
+export(get_residuals)
