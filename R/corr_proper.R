@@ -204,3 +204,4 @@ corr_proper <- function(data, y = NULL, p.adjust = NULL){
   return(results)
 }
 
+### At the day this package is created, 2021.2.27, one of my favorite actor, Menda Wu, passed away. Thanks to his great contribution to Chinese film, which brought so many joys to my childhood. R.I.P
