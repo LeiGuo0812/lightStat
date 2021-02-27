@@ -38,6 +38,7 @@ corr_proper <- function(data, columns = 1:length(data), p.adjust = NULL){
   #Loop for paire-wise variable
   for (i in 1:length(data_test)) {
     for (j in 1:length(data_test)) {
+<<<<<<< HEAD
       if(is.character(data_test[i] %>% dplyr::pull()) |
          is.character(data_test[j] %>% dplyr::pull())){
         cor <- list(r = NA,
@@ -47,6 +48,9 @@ corr_proper <- function(data, columns = 1:length(data), p.adjust = NULL){
                     se = NA)
         results$method[i,colnames(data_test)[j]] <- NA
       } else if (is.ordered(data_test[i] %>% dplyr::pull()) &
+=======
+      if (is.ordered(data_test[i] %>% dplyr::pull()) &
+>>>>>>> origin
           is.ordered(data_test[j] %>% dplyr::pull())) {
         cor <- psych::corr.test(as.numeric(data_test[i] %>% pull()),
                                 as.numeric(data_test[j] %>% pull()),
@@ -54,16 +58,22 @@ corr_proper <- function(data, columns = 1:length(data), p.adjust = NULL){
         #Record test method
         results$method[i,colnames(data_test)[j]] <- 'kendall'
       }
+<<<<<<< HEAD
       else if(
         (is.ordered(data_test[i] %>% dplyr::pull()) &
               !is.factor(data_test[j] %>% dplyr::pull())) |
         (!is.factor(data_test[i] %>% dplyr::pull()) &
               is.ordered(data_test[j] %>% dplyr::pull()))){
+=======
+      else if(is.ordered(data_test[i] %>% dplyr::pull()) |
+              is.ordered(data_test[j] %>% dplyr::pull())){
+>>>>>>> origin
         cor <- psych::corr.test(as.numeric(data_test[i] %>% pull()),
                                 as.numeric(data_test[j] %>% pull()),
                                 method = 'spearman')
         #Record test method
         results$method[i,colnames(data_test)[j]] <- 'spearman'
+<<<<<<< HEAD
       } else if (is.factor(data_test[i] %>% dplyr::pull()) |
                  is.factor(data_test[j] %>% dplyr::pull())) {
         cor <- list(r = NA,
@@ -78,6 +88,13 @@ corr_proper <- function(data, columns = 1:length(data), p.adjust = NULL){
         normal <- lapply(c(data_test[i],data_test[j]), shapiro.test)
       # If either variable does not meet normality
         if (normal[[1]]$p.value < 0.05 | normal[[2]]$p.value < 0.05 ) {
+=======
+      } else {
+        #Normality test
+        normal <- lapply(c(data_test[i],data_test[j]), shapiro.test)
+      # If either variable does not meet normality
+        if (normal[[1]]$p.value < 0.05 | normal[[1]]$p.value < 0.05 ) {
+>>>>>>> origin
           #Corr test with spearman correlation
           cor <- psych::corr.test(as.numeric(data_test[i] %>% pull()),
                                   as.numeric(data_test[j] %>% pull()),
