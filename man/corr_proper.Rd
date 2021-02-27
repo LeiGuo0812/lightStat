@@ -4,12 +4,12 @@
 \alias{corr_proper}
 \title{corr_proper}
 \usage{
-corr_proper(data, columns = 1:length(data), p.adjust = NULL)
+corr_proper(data, y = NULL, p.adjust = NULL)
 }
 \arguments{
 \item{data}{a dataframe or tibble.}
 
-\item{columns}{can be either index or colnames of data, which enables subsetting data to test.}
+\item{y}{the second matrix or dataframe with the same number of rows as data.If y is provided, the correlation just between variables in data and y will be calculated. If y is not provided, pair-wise correlation between variables in data will be calculated.}
 
 \item{p.adjust}{p.adjust receive a string of holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none", which would conduct p value adjust.}
 }
@@ -21,18 +21,19 @@ a list. contains the matrix and long form result of correlation matrix:\itemize{
 \item\code{method:} the correlation method used in this pair of correlation analysis. If both variables are ordinal, kendall correlation analysis will be used. If both variables are numeric and meet normality, pearson correlation analysis will be used. If either of the two variables doesn't meet normality, spearman correlation analysis will be used. If one variable is ordinal and the other is numerical ,spearman correlation analysis will be used. If either variable is factor, NA will be returned to all results.
 \item\code{t:} value of t-test for each correlation
 \item\code{se:} standard error of the correlation
-\item\code{cor_long:} the long format of correlation analysis results, NA results will not be shown}
+\item\code{cor_long:} a tibble, the long format of correlation analysis results, NA results will not be shown}
 }
 \description{
 chooses proper correlation method (pearson or spearman) based on normality of the tested variables.
 }
 \examples{
 data("mtcars")
-
-#Use all columns to compute correlaton
 corr_proper(mtcars)
 
-#Use only the first 3 columns,and use fdr correction
-corr_proper(mtcars, 1:3, 'fdr')
+#Use fdr correction
+corr_proper(mtcars, p.adjust = 'fdr')
+
+#Calculate correlation between two data frames
+corr_proper(mtcars[1:3],mtcars[4:5], p.adjust = 'fdr')
 
 }
