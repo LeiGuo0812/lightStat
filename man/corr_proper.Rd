@@ -2,7 +2,7 @@
 % Please edit documentation in R/corr_proper.R
 \name{corr_proper}
 \alias{corr_proper}
-\title{corr_proper}
+\title{Correlation Analysis with proper Method}
 \usage{
 corr_proper(data, y = NULL, p.adjust = NULL)
 }

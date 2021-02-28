@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_residuals.R
 \name{get_residuals}
 \alias{get_residuals}
-\title{get_residuals}
+\title{Get Residuals with Linear Model}
 \usage{
 get_residuals(data, cov, addmean = TRUE)
 }

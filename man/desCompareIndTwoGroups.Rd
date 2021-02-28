@@ -2,7 +2,7 @@
 % Please edit documentation in R/desCompareIndTwoGroups.R
 \name{desCompareIndTwoGroups}
 \alias{desCompareIndTwoGroups}
-\title{desCompareIndTwoGroups}
+\title{Describe and Compare Two Independent Groups}
 \usage{
 desCompareIndTwoGroups(data, columns, group, ci = FALSE, n = 1000)
 }

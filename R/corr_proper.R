@@ -1,4 +1,4 @@
-#' corr_proper
+#' Correlation Analysis with proper Method
 #' @description chooses proper correlation method (pearson or spearman) based on normality of the tested variables.
 #' @importFrom magrittr %>%
 #' @importFrom dplyr pull mutate select across all_of filter rename left_join everything
