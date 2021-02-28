@@ -1,4 +1,4 @@
-#' desCompareIndTwoGroups
+#' Describe and Compare Two Independent Groups
 #' @description gives a easy-to-read result of two independent group description and comparison analysis.
 #' @importFrom dplyr filter select across all_of pull
 #' @param data a data.frame or tibble

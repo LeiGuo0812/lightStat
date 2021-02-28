@@ -1,4 +1,4 @@
-#' get_residuals
+#' Get Residuals with Linear Model
 #' @description get residuals of columns in data regressed cov with \code{\link[stats]{lm}}
 #' @importFrom dplyr pull
 #' @importFrom stats as.formula lm
