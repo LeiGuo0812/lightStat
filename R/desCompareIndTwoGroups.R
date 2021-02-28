@@ -1,6 +1,6 @@
 #' desCompareIndTwoGroups
 #' @description gives a easy-to-read result of two independent group description and comparison analysis.
-#'
+#' @importFrom dplyr filter select across all_of pull
 #' @param data a data.frame or tibble
 #' @param columns dependent variables needed to be test, could be either string or column index
 #' @param group the grouping variable, could be either string or column index
@@ -58,7 +58,7 @@ desCompareIndTwoGroups  <- function(data, columns, group, ci = FALSE, n = 1000){
 
     # Filter NA values in dependent variable
     data_test <- data %>%
-      dplyr::filter(across(dplyr::all_of(dependent), ~ !is.na(.x)))
+      filter(across(all_of(dependent), ~ !is.na(.x)))
 
     # Get current groups of dependent variable
     two_groups <- pull(unique(data_test[group]))
@@ -77,13 +77,13 @@ desCompareIndTwoGroups  <- function(data, columns, group, ci = FALSE, n = 1000){
 
       #Prepare data for describe analysis
       data_test %>%
-        dplyr::select(dplyr::all_of(c(dependent,group))) -> desc_data
+        select(all_of(c(dependent,group))) -> desc_data
       #Describe table of group1
       desc_data[desc_data[group]==two_groups[1],] %>%
-        dplyr::select(dplyr::all_of(dependent)) %>% rstatix::get_summary_stats() -> group1_desc
+        select(all_of(dependent)) %>% rstatix::get_summary_stats() -> group1_desc
       #Describe table of group2
       desc_data[desc_data[group]==two_groups[2],] %>%
-        dplyr::select(all_of(dependent)) %>% rstatix::get_summary_stats() -> group2_desc
+        select(all_of(dependent)) %>% rstatix::get_summary_stats() -> group2_desc
 
       #Record describe analysis results
       results[i,'group1'] <- two_groups[1]
@@ -165,11 +165,11 @@ desCompareIndTwoGroups  <- function(data, columns, group, ci = FALSE, n = 1000){
       index <- which(two_groups == pull(unique(data[group])))
       #Prepare data for describe analysis
       data_test %>%
-        dplyr::select(all_of(c(dependent,group))) -> desc_data
+        select(all_of(c(dependent,group))) -> desc_data
       #If group1 has data
       if (index == 1) {
         desc_data[desc_data[group]==two_groups,] %>%
-          dplyr::select(all_of(dependent)) %>% rstatix::get_summary_stats() -> group_desc
+          select(all_of(dependent)) %>% rstatix::get_summary_stats() -> group_desc
         #Record describe analysis results
         results[i,'group1'] <- two_groups
         results[i,'n1'] <- group_desc$n
@@ -182,7 +182,7 @@ desCompareIndTwoGroups  <- function(data, columns, group, ci = FALSE, n = 1000){
       } else if (index == 2){
         #If group2 has data
         desc_data[desc_data[group]==two_groups,] %>%
-          dplyr::select(all_of(dependent)) %>% rstatix::get_summary_stats() -> group_desc
+          select(all_of(dependent)) %>% rstatix::get_summary_stats() -> group_desc
         #Record describe analysis results
         results[i,'group2'] <- two_groups
         results[i,'n2'] <- group_desc$n

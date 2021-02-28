@@ -1,5 +1,7 @@
 #' get_residuals
 #' @description get residuals of columns in data regressed cov with \code{\link[stats]{lm}}
+#' @importFrom dplyr pull
+#' @importFrom stats as.formula lm
 #' @param data a data frame or tibble, contains the columns to calculate residuals
 #' @param cov a data frame or tibble, contains the columns as covariate. The length of row should be the same as data
 #' @param addmean logical, should the mean of original data should be added back to the residual, default is true
@@ -22,7 +24,7 @@ get_residuals <- function(data,cov,addmean = TRUE){
     formula <- as.formula(paste(x,paste(cov,collapse = '+'),sep = '~'))
     model <- lm(formula = formula, data = lm_data)
     if (addmean == TRUE) {
-      return(model$residuals + mean(dplyr::pull(model$model[x]),na.rm = T))
+      return(model$residuals + mean(pull(model$model[x]),na.rm = T))
     } else {
       return(model$residuals)
     }
